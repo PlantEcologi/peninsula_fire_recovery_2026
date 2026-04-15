@@ -7,15 +7,15 @@ library(luna)
 library(sf)
 
 ### Explore download options
-# Lists all products that are currently searchable
-prod <- getProducts()
-head(prod)
+## Lists all products that are currently searchable
+# prod <- getProducts()
+# head(prod)
 
-# List MODIS products
-modis <- getProducts("^MOD|^MYD|^MCD")
-head(modis)
-getProducts("MOD13Q1")
-productInfo(product = "MOD13Q1", version = "061")
+## List MODIS products
+# modis <- getProducts("^MOD|^MYD|^MCD")
+# head(modis)
+# getProducts("MOD13Q1")
+# productInfo(product = "MOD13Q1", version = "061")
 
 ### Settings
 product = "MOD13Q1"
@@ -32,5 +32,22 @@ getNASA(product, start, end, aoi=aoi, download = FALSE)
 # password <- ""
 
 ### The download
-getNASA(product, start, end, aoi=aoi, download=TRUE, overwrite=TRUE,
-        path="bigdata", username=username, password=password)
+dat <- getNASA(product, start, end, aoi=aoi, download=TRUE, overwrite=TRUE,
+        path="bigdata2", username=username, password=password, version = "061", limit = 1000000)
+
+### Check for complete files
+fls <- list.files("bigdata2", pattern = ".hdf", full.names = T)
+#fls <- list.files("bigdata2", pattern = "(?=.*.hdf)(?=.*NDVI)", perl = T, full.names = T)
+flsi <- file.info(fls)
+fls[which(flsi$size < 10000)]
+
+# Looks like lots of missing data 2020-2022. Let's try those again...
+start <- "2020-01-01"
+end <- "2022-12-31"
+dat <- getNASA(product, start, end, aoi=aoi, download=TRUE, overwrite=TRUE,
+               path="bigdata2", username=username, password=password, version = "061", limit = 1000000)
+
+
+### Read in complete files and process
+rdat <- rast(fls)
+rdat <- rast(fls[which(flsi$size > 10000)])
