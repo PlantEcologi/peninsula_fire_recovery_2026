@@ -6,7 +6,7 @@
 ##setup
 ####################
 #you only need to run this once
-renv::init()
+#renv::init()
 
 ### Load libraries
 libs=c(
@@ -46,8 +46,10 @@ registerDoParallel(cl)
 #spatial covariates and vegetation age
 load(paste0(mdatwd,"inputData.RData"))
 #modis ndvi and quality flag from MODIS/006/MYD13Q1 and MODIS/006/MOD13Q1
-NDVI <- stack(paste0(mdatwd,"NDVI"))
-QA <- stack(paste0(mdatwd,"QA"))
+NDVI <- stack("data/NDVI_stack_2001_2026.tif")
+#NDVI <- stack(paste0(mdatwd,"NDVI"))
+#QA <- stack(paste0(mdatwd,"QA"))
+NDVI <- projectRaster(NDVI, rfi, method = "ngb")
 
 #mask input data to where we have fire data
 rfi <- mask(rfi, vegtype)
