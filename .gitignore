@@ -6,7 +6,7 @@
 .DS_Store
 
 # Session Data files
-.RData
+*modeloutput.RData
 
 # User-specific files
 .Ruserdata
