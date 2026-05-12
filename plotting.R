@@ -6,11 +6,8 @@
 #only run if you have not before
 #renv::init()
 
-libs=c("dplyr",
-       "tidyr",
-       "ggplot2",
-       "reshape2",
-       "raster",
+libs=c("tidyverse",
+       "terra",
        "coda",
        "rjags",
        "tictoc",
@@ -23,7 +20,7 @@ lapply(libs, require, character.only=T)
 
 #file locations and names
 mdatwd <- "data/"
-mname <- "peninsulaDec2019" #model name for file naming
+mname <- "peninsulaJune20222026-04-16" #model name for file naming
 
 ###########################################################
 ###Get exceedance rasters (GEE output) and plot
@@ -68,10 +65,10 @@ ggsave(filename = "figures/exceedmap.png", plot = g, device = NULL, path = NULL,
 ###Get model data and prep for model prediction and plotting
 ###########################################################
 
-#download the results if you did not create them in fit_model.R:
-download.file('https://storage.googleapis.com/data-sharing-gmoncrieff/peninsulaDec2019_modeloutput.Rdata', destfile = paste0(mdatwd, mname, "_modeloutput.Rdata"))
-download.file('https://storage.googleapis.com/data-sharing-gmoncrieff/peninsulaDec2019_envdata.Rdata', destfile = paste0(mdatwd, mname, "_envdata.Rdata"))
-download.file('https://storage.googleapis.com/data-sharing-gmoncrieff/peninsulaDec2019_inputdata_small.Rdata', destfile = paste0(mdatwd, mname, "_inputdata_small.Rdata"))
+# #download the results if you did not create them in fit_model.R:
+# download.file('https://storage.googleapis.com/data-sharing-gmoncrieff/peninsulaDec2019_modeloutput.Rdata', destfile = paste0(mdatwd, mname, "_modeloutput.Rdata"))
+# download.file('https://storage.googleapis.com/data-sharing-gmoncrieff/peninsulaDec2019_envdata.Rdata', destfile = paste0(mdatwd, mname, "_envdata.Rdata"))
+# download.file('https://storage.googleapis.com/data-sharing-gmoncrieff/peninsulaDec2019_inputdata_small.Rdata', destfile = paste0(mdatwd, mname, "_inputdata_small.Rdata"))
 
 #load results
 foutput <- paste0(mdatwd, mname, "_modeloutput.Rdata")
@@ -148,12 +145,12 @@ As <- res %>%
 
 #to get a raster of ids:
 env = env %>%
-  separate(UIJ,c("lon","lat"),sep="_")
+  separate(UI,c("lon","lat"),sep="_")
 jag_id <- data.frame(lon = env$lon, lat = env$lat, env$jag_id)
-jag_id_ras<-rasterFromXYZ(jag_id,res=c(0.002607436,0.002607436),crs='+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs',digits=0.3)
+jag_id_ras<-rast(jag_id,crs='+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
 
 ###########################################################
-###Plot maps of parameters and boxplot of regressino coefficients
+###Plot maps of parameters and boxplot of regression coefficients
 ###########################################################
 
 ###########################################################
@@ -181,15 +178,15 @@ betas <- bind_rows(lambda.coef, gamma.coef, A.coef)
 betas$covariate <- str_sub(betas$variable, -7, -1)
 betas$variable <- str_sub(betas$variable, 1, -9)
 betas <- filter(betas, !covariate == "beta[1]")
-betas$covariate <- recode(betas$covariate, 
-                          'beta[2]' = "slope", 
-                          'beta[3]' = "aspect",
+betas$covariate <- recode(betas$covariate,  # see names(env) for names and order of covariates
+                          'beta[2]' = "elevation", 
+                          'beta[3]' = "slope",
                           'beta[4]' = "TPI",
-                          'beta[5]' = "precip_Jan",
-                          'beta[6]' = "precip_July",
-                          'beta[7]' = "tmax_Jan",
-                          'beta[8]' = "tmin_July",
-                          'beta[9]' = "soiltype")
+                          'beta[5]' = "northness",
+                          'beta[6]' = "eastness",
+                          'beta[7]' = "granite", 
+                          'beta[8]' = "sandstone",
+                          'beta[9]' = "sand")
 
 b <- ggplot(betas) +
   geom_boxplot(aes(x = covariate, y = value)) +
@@ -202,8 +199,9 @@ b <- ggplot(betas) +
 
 # Maps
 
-dat <- bind_rows(lambdas, gammas, alphas, As)
-dat <- left_join(dat, jag_id, by = c("parnum" = "gammas.parnum"))
+dat <- bind_rows(lambdas, gammas, alphas, As) |>
+  mutate(across(c("parnum"), as.numeric))
+dat <- left_join(dat, jag_id, by = c("parnum" = "env.jag_id")) #"gammas.parnum"))
 dat$lon <- as.numeric(as.character(dat$lon))
 dat$lat <- as.numeric(as.character(dat$lat))
 dat <- fortify(dat)
@@ -212,6 +210,7 @@ dat <- fortify(dat)
 
 coast <- st_read("Data/coastline") #, layer = "coastline")
 coast <- st_transform(coast, '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
+coast <- st_crop(coast, jag_id_ras)
 coast <- fortify(coast)
 
 ###Plot
@@ -252,7 +251,7 @@ parmeans <- ggdraw() +
   draw_plot(A + theme(legend.position=c(.25,.25), legend.key.size=unit(.5, "cm")), x = .5, y = 0, width = .25, height = 1) +
   draw_plot(a + theme(legend.position=c(.25,.25), legend.key.size=unit(.5, "cm")), x = .75, y = 0, width = .25, height = 1)
 
-ggsave(filename = "figures/parametermap_means.png", plot = parmeans, device = NULL, path = NULL, scale = 1, width = 26, height = 14, units = "cm", dpi = 300, limitsize = TRUE)
+ggsave(filename = "figures/CP_parametermap_means.png", plot = parmeans, device = NULL, path = NULL, scale = 1, width = 26, height = 14, units = "cm", dpi = 300, limitsize = TRUE)
 
 pars <- ggdraw() +
   draw_plot(A + theme(legend.position=c(.25,.25), legend.key.size=unit(.5, "cm")), x = 0, y = .4, width = .33, height = .6) +
@@ -261,7 +260,7 @@ pars <- ggdraw() +
   draw_plot(b + theme(legend.position=c(.25,.25), legend.key.size=unit(.5, "cm")), x = 0, y = 0, width = .9, height = .4) +
   draw_plot_label(label = c("(a)", "(b)"), size = 15, x = c(0.025, 0.025), y = c(.965, .4), fontface = "bold")
 
-ggsave(filename = "parametermap.png", plot = pars, device = NULL, path = NULL, scale = 1, width = 16, height = 20, units = "cm", dpi = 300, limitsize = TRUE)
+ggsave(filename = "CP_parametermap.png", plot = pars, device = NULL, path = NULL, scale = 1, width = 16, height = 20, units = "cm", dpi = 300, limitsize = TRUE)
 
 
 # Standard Deviations
@@ -300,7 +299,7 @@ parsd <- ggdraw() +
   draw_plot(A + theme(legend.position=c(.25,.25), legend.key.size=unit(.5, "cm")), x = .5, y = 0, width = .25, height = 1) +
   draw_plot(a + theme(legend.position=c(.25,.25), legend.key.size=unit(.5, "cm")), x = .75, y = 0, width = .25, height = 1)
 
-ggsave(filename = "figures/parametermap_SD.png", plot = parsd, device = NULL, path = NULL, scale = 1, width = 26, height = 14, units = "cm", dpi = 300, limitsize = TRUE)
+ggsave(filename = "figures/CP_parametermap_SD.png", plot = parsd, device = NULL, path = NULL, scale = 1, width = 26, height = 14, units = "cm", dpi = 300, limitsize = TRUE)
 
 
 ###########################################################
@@ -308,25 +307,29 @@ ggsave(filename = "figures/parametermap_SD.png", plot = parsd, device = NULL, pa
 ###########################################################
 
 # Get points of interest and extract "id" by intersecting with "jag_id_ras" raster
-pts <- data.frame(
-  Site = c("Miller's Point: Alien clearing", "Cape of Good Hope: Drought", 
-           "Silvermine: Development", "Silvermine: Drought",
-           "Silvermine: Aliens", "Karbonkelberg: Fire"),
-  Latitude = c(-34.225279, -34.316068, -34.113911,
-               -34.115129, -34.03837, -34.039321),
-  Longitude = c(18.463551, 18.428294, 18.39334,
-                18.397745, 18.37375, 18.334125)
-)
 
+pts <- read.csv("data/focal_plots_n50_coords.csv") |> 
+  mutate(geometry = str_remove_all(geometry, pattern = "[c()]")) |>
+  separate_wider_delim(cols = geometry, names = c("Longitude", "Latitude"), delim = ",") |>
+  st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326) |>
+  rename(Site = name)
 
-coordinates(pts) <- ~ Longitude + Latitude
-ids <- raster::extract(jag_id_ras, pts)
+st_write(pts, "data/focal_plots_n50_coords.kml")
+
+# pts <- data.frame(
+#   Site = c("Miller's Point: Alien clearing", "Cape of Good Hope: Drought"),
+#   Latitude = c(-34.225279, -34.316068),
+#   Longitude = c(18.463551, 18.428294)
+# )
+# pts <- st_as_sf(pts, coords = c("Longitude", "Latitude"), crs = 4326) 
+
+ids <- extract(jag_id_ras, pts)
 
 ###NOTE: if you dont want to do this for all pixels it will take a long time!!!###
 
 # Filter on the the jag_id column of tdat and env
-tdat <- tdat %>% filter(jag_id %in% ids)
-env <- env %>% filter(jag_id %in% ids)
+tdat <- tdat %>% filter(jag_id %in% ids[,2])
+env <- env %>% filter(jag_id %in% ids[,2])
 
 #set number of samples
 nsamp <- 1000
@@ -341,10 +344,9 @@ sigma_par <- sample(unlist(m[,"sigma"]),nsamp)
 new_dat = tdat[FALSE,]
 
 # This loop models ndvi using the estimated parameters and covariate data for the points of interest
-##NB model was fitted on data up to 2014-05-31##
 
 ##time
-tic()
+#tic()
 
 for (j in 1:nrow(env)){
   #pixel_id
@@ -412,13 +414,13 @@ for (j in 1:nrow(env)){
   new_dat <- bind_rows(new_dat,tdat_temp)
 }
 
-toc()
+#toc()
 
 ### Plot
 
 #Fix names
-nms <- data.frame(jag_id = ids, Name = pts$Site[1:6])
-new_dat <- merge(new_dat, nms)
+nms <- data.frame(jag_id = ids[,2], Name = pts$Site)
+new_dat <- merge(new_dat, nms, by.x = "jag_id", by.y = "jag_id")
 
 #cape point
 Pcp <- ggplot(data=new_dat, aes(x=Date,y=NDVI)) +
@@ -426,17 +428,158 @@ Pcp <- ggplot(data=new_dat, aes(x=Date,y=NDVI)) +
   geom_line(color="blue") +
   geom_ribbon(aes(ymin=lower,ymax=upper,alpha=0.1))+
   geom_ribbon(aes(ymin=lq,ymax=uq,alpha=0.1))+
-  scale_x_date(date_breaks = "1 year",
+  scale_x_date(date_breaks = "3 year",
                labels=date_format("%Y"),
-               limits = as.Date(c('2013-01-01','2017-06-20'))) +
+               limits = as.Date(c('2001-01-01','2022-06-01'))) +
   scale_y_continuous(limits=c(0,1)) +
   facet_wrap(~Name) +
   xlab("Date") +
   ylab("NDVI") +
   theme_bw() +
   theme(legend.position="none") +
-  geom_vline(xintercept = as.Date("2014-05-31")) +
-  annotate("text", label = "Fit", x = as.Date("2013-03-15"), y = 0.1) +
-  annotate("text", label = "Forecast", x = as.Date("2015-06-01"), y = 0.1)
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  labs(title = "Model fit and forecast for points of interest")
+#  geom_vline(xintercept = as.Date("2014-05-31")) +
+#  annotate("text", label = "Fit", x = as.Date("2013-03-15"), y = 0.1) +
+#  annotate("text", label = "Forecast", x = as.Date("2015-06-01"), y = 0.1)
 
-ggsave(filename = "figures/postfire_curves_points_of_interest.png", plot = Pcp, device = NULL, path = NULL, scale = 1, width = 18, height = 12, units = "cm", dpi = 300, limitsize = TRUE)
+ggsave(filename = "figures/CP_postfire_curves_points_of_interest.png", plot = Pcp, device = NULL, path = NULL, scale = 1, width = 36, height = 24, units = "cm", dpi = 300, limitsize = TRUE)
+
+# # Plot map
+# library(rosm)
+# library(ggspatial)
+# 
+# pts |>
+# ggplot() + 
+#   annotation_map_tile(type = "cartolight", progress = "none") + 
+#   geom_sf() +
+#   geom_sf_text(aes(label = Site), nudge_y = -0.0025)
+# 
+# ggsave(filename = "figures/CP_plot_map.png", device = NULL, path = NULL, scale = 1, width = 12, height = 20, units = "cm", dpi = 300, limitsize = TRUE)
+
+### Calculate Continuous Rank Probability Score (CRPS) and Mean Forecast Error (MFE) for model evaluation
+
+library(scoringRules)
+library(slider)
+
+# hmm <- new_dat |> # This is a test to check the CRPS calculation for one point and date
+#   filter(jag_id ==4, Date == as.Date("2003-04-07")) |>
+#   mutate(sd = (upper - lower) / 3.92 ) |> # Convert 95% CI to SD
+#   mutate(crps = crps_norm(y = NDVI, mean = mean, sd = sd))
+
+# For each time step
+crps_dat <- new_dat |>
+  group_by(Name, Date)  |>
+  mutate(sd = (upper - lower) / 3.92 ) |> # Convert 95% CI to SD
+  mutate(crps = crps_norm(y = NDVI, mean = mean, sd = sd)) |> # Calculate CRPS for each prediction
+  mutate(crps_cum_avg = cummean(crps)) |> # Cumulative average of CRPS over time
+  mutate(mfe = NDVI - mean) |> # Mean Forecast Error (MFE) for each prediction
+  mutate(mfe_cum_avg = cummean(mfe)) |> # Cumulative average of MFE over time
+  mutate(mfe_slide_avg = slide_mean(mfe, before = 3, after = 0, step = 1))
+
+# Annual values
+crps_year <- crps_dat |>
+  group_by(Name, Year = lubridate::year(Date)) |>
+  summarise(crps = mean(crps), mfe = mean(mfe))
+
+### Plot CRPS and MFE by year
+
+#mfe
+crps_year |> 
+  ggplot(aes(x = Year, y = mfe)) +
+  geom_line() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  # ylim(0, 0.2) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  facet_wrap(~Name) +
+  labs(title = "Average Mean Forecast Error (MFE) by Year")
+
+ggsave(filename = "figures/CP_MFE_annual.png", device = NULL, path = NULL, scale = 1, width = 36, height = 24, units = "cm", dpi = 300, limitsize = TRUE)
+
+#crps
+crps_year |> 
+  ggplot(aes(x = Year, y = crps)) +
+  geom_line() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  # ylim(0, 0.2) +
+  # geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  facet_wrap(~Name) +
+  labs(title = "Average Continuous Rank Probability Score (CRPS) by Year")
+
+ggsave(filename = "figures/CP_CRPS_annual.png", device = NULL, path = NULL, scale = 1, width = 36, height = 24, units = "cm", dpi = 300, limitsize = TRUE)
+
+### Plot CRPS and MFE over time for all timesteps
+
+## Line graph
+
+#mfe by date
+crps_dat |> 
+  ggplot(aes(x = Date, y = mfe)) +
+  geom_line() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+ # ylim(0, 0.2) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  facet_wrap(~Name) +
+  labs(title = "Mean Forecast Error (MFE) for all timesteps")
+
+ggsave(filename = "figures/CP_MFE_timestep.png", device = NULL, path = NULL, scale = 1, width = 36, height = 24, units = "cm", dpi = 300, limitsize = TRUE)
+
+#mfe cumulative average by date
+crps_dat |> 
+  ggplot(aes(x = Date, y = mfe_cum_avg)) +
+  geom_line() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  # ylim(0, 0.2) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  facet_wrap(~Name)
+
+#mfe sliding average (3 previous timesteps) by date
+crps_dat |> 
+  ggplot(aes(x = Date, y = mfe_slide_avg)) +
+  geom_line() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  # ylim(0, 0.2) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  facet_wrap(~Name)
+
+#mfe by age
+crps_dat |> 
+  ggplot(aes(x = Age, y = mfe)) +
+  geom_point() +
+  geom_smooth(method = "loess") +
+  facet_wrap(~Name)
+  #theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  # ylim(0, 0.2) +
+  #geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  #facet_wrap(~Name)
+
+# crps by date
+crps_dat |> 
+  ggplot(aes(x = Date, y = crps)) +
+  geom_line() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  ylim(0, 0.2) +
+  #geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  facet_wrap(~Name) +
+  labs(title = "Continuous Rank Probability Score (CRPS) for all timesteps")
+
+ggsave(filename = "figures/CP_CRPS_timestep.png", device = NULL, path = NULL, scale = 1, width = 36, height = 24, units = "cm", dpi = 300, limitsize = TRUE)
+
+# crps cumulative average by date
+crps_dat |> 
+  ggplot(aes(x = Date, y = crps_cum_avg)) +
+  geom_line() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  ylim(0, 0.2) +
+  #geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  facet_wrap(~Name)
+
+
+# Boxplot by year
+crps_dat |> 
+  mutate(Year = lubridate::year(Date)) |>
+  ggplot(aes(group = Year, y = crps)) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  facet_wrap(~Name)
+  

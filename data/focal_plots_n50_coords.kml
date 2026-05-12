@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="focal_plots_n50_coords" id="focal_plots_n50_coords">
+	<SimpleField name="Site" type="string"></SimpleField>
+	<SimpleField name="plot" type="string"></SimpleField>
+</Schema>
+<Folder><name>focal_plots_n50_coords</name>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p1sw</SimpleData>
+		<SimpleData name="plot">CP_1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.3744263878333,-34.2073100808333</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p8sw</SimpleData>
+		<SimpleData name="plot">CP_8</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.3842624126667,-34.2235069593333</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p9sw</SimpleData>
+		<SimpleData name="plot">CP_9</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.3942185641667,-34.2235664986667</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p12sw</SimpleData>
+		<SimpleData name="plot">CP_12</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.3934325563333,-34.231832327</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p14sw</SimpleData>
+		<SimpleData name="plot">CP_14</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4136176513333,-34.2321171296667</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p15sw</SimpleData>
+		<SimpleData name="plot">CP_15</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.3840404563333,-34.2398727443333</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p16sw</SimpleData>
+		<SimpleData name="plot">CP_16</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.393506271,-34.2402394221667</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p17sw</SimpleData>
+		<SimpleData name="plot">CP_17</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.40362031,-34.2400773266667</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p18sw</SimpleData>
+		<SimpleData name="plot">CP_18</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.413234376,-34.2399264115</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p21sw</SimpleData>
+		<SimpleData name="plot">CP_21</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4030232246667,-34.2482252133333</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p22sw</SimpleData>
+		<SimpleData name="plot">CP_22</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4118278675,-34.2483595365</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p27sw</SimpleData>
+		<SimpleData name="plot">CP_27</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4036103831667,-34.2566490245</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p28sw</SimpleData>
+		<SimpleData name="plot">CP_28</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.414228254,-34.2572102441667</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p29sw</SimpleData>
+		<SimpleData name="plot">CP_29</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4257878641667,-34.2569806071667</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p31sw</SimpleData>
+		<SimpleData name="plot">CP_31</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4431853723333,-34.2559592645</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p34sw</SimpleData>
+		<SimpleData name="plot">CP_34</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.3933373753333,-34.2656196175</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p37sw</SimpleData>
+		<SimpleData name="plot">CP_37</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4230219056667,-34.2650496433333</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p38</SimpleData>
+		<SimpleData name="plot">CP_38</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4339204681667,-34.2663996088333</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p39sw</SimpleData>
+		<SimpleData name="plot">CP_39</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4438777643333,-34.2649954383334</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p40sw</SimpleData>
+		<SimpleData name="plot">CP_40</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4536367581667,-34.26494944</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p44sw</SimpleData>
+		<SimpleData name="plot">CP_44</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.3922431146667,-34.2692101185</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p45sw</SimpleData>
+		<SimpleData name="plot">CP_45</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4036579923333,-34.273142193</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p47sw</SimpleData>
+		<SimpleData name="plot">CP_47</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4232075383333,-34.2730635716667</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p48sw</SimpleData>
+		<SimpleData name="plot">CP_48</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.433024315,-34.2730206933333</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p49sw</SimpleData>
+		<SimpleData name="plot">CP_49</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4429056135,-34.2733046308333</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p50sw</SimpleData>
+		<SimpleData name="plot">CP_50</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4532159441667,-34.2732788133333</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p55sw</SimpleData>
+		<SimpleData name="plot">CP_55</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4236131081667,-34.2814906321667</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p56sw</SimpleData>
+		<SimpleData name="plot">CP_56</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4330716515,-34.2816015093333</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p57sw</SimpleData>
+		<SimpleData name="plot">CP_57</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4429911233333,-34.2822270515</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p58sw</SimpleData>
+		<SimpleData name="plot">CP_58</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4532213531667,-34.2813759086667</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p59sw</SimpleData>
+		<SimpleData name="plot">CP_59</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4629916056667,-34.280961449</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p61sw</SimpleData>
+		<SimpleData name="plot">CP_61</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4041165086667,-34.288528286</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p62sw</SimpleData>
+		<SimpleData name="plot">CP_62</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4139310266667,-34.2897337266667</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p63sw</SimpleData>
+		<SimpleData name="plot">CP_63</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4231994151667,-34.2897717781667</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p64sw</SimpleData>
+		<SimpleData name="plot">CP_64</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4333180991667,-34.2897470966667</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p65sw</SimpleData>
+		<SimpleData name="plot">CP_65</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.443306949,-34.2893959336667</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p66sw</SimpleData>
+		<SimpleData name="plot">CP_66</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4529656321667,-34.2897447415</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p67sw</SimpleData>
+		<SimpleData name="plot">CP_67</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.463000169,-34.2898224293333</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p70sw</SimpleData>
+		<SimpleData name="plot">CP_70</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4231157476667,-34.297935946</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p71sw</SimpleData>
+		<SimpleData name="plot">CP_71</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4332774936667,-34.297848516</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p72sw</SimpleData>
+		<SimpleData name="plot">CP_72</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4443728808333,-34.2966773258333</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p73sw</SimpleData>
+		<SimpleData name="plot">CP_73</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4526543223333,-34.2984554471667</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p75sw</SimpleData>
+		<SimpleData name="plot">CP_75</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4127683266667,-34.3057102503333</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p76sw</SimpleData>
+		<SimpleData name="plot">CP_76</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4224287305,-34.3060507115</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p78sw</SimpleData>
+		<SimpleData name="plot">CP_78</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4429724631667,-34.3060048353333</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p79sw</SimpleData>
+		<SimpleData name="plot">CP_79</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4529256323333,-34.306355775</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p82sw</SimpleData>
+		<SimpleData name="plot">CP_82</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4235298376667,-34.314318078</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p83sw</SimpleData>
+		<SimpleData name="plot">CP_83</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.433476755,-34.3146262978333</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p88sw</SimpleData>
+		<SimpleData name="plot">CP_88</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4429493773333,-34.3226925035</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#focal_plots_n50_coords">
+		<SimpleData name="Site">p92sw</SimpleData>
+		<SimpleData name="plot">CP_92</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>18.4432728478333,-34.33088319</coordinates></Point>
+  </Placemark>
+</Folder>
+</Document></kml>

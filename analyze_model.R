@@ -5,9 +5,9 @@
 #renv::init()
 
 libs=c(
-  "dplyr",
-  "tidyr",
-  "raster",
+  "tidyverse",
+  #"tidyr",
+  "terra",
   "coda",
   "rjags")
 lapply(libs, require, character.only=T)
@@ -16,12 +16,12 @@ lapply(libs, require, character.only=T)
 
 #file locations and names
 mdatwd <- "data/"
-mname <- "peninsulaDec2019" #model name for file naming
+mname <- "peninsulaJune20222026-04-16" #model name for file naming
 
-#download the results if you did not create them in fit_model.R:
-download.file('https://storage.googleapis.com/data-sharing-gmoncrieff/peninsulaDec2019_modeloutput.Rdata', destfile = paste0(mdatwd, mname, "_modeloutput.Rdata"))
-download.file('https://storage.googleapis.com/data-sharing-gmoncrieff/peninsulaDec2019_envdata.Rdata', destfile = paste0(mdatwd, mname, "_envdata.Rdata"))
-download.file('https://storage.googleapis.com/data-sharing-gmoncrieff/peninsulaDec2019_inputdata_small.Rdata', destfile = paste0(mdatwd, mname, "_inputdata_small.Rdata"))
+# #download the results if you did not create them in fit_model.R:
+# download.file('https://storage.googleapis.com/data-sharing-gmoncrieff/peninsulaDec2019_modeloutput.Rdata', destfile = paste0(mdatwd, mname, "_modeloutput.Rdata"))
+# download.file('https://storage.googleapis.com/data-sharing-gmoncrieff/peninsulaDec2019_envdata.Rdata', destfile = paste0(mdatwd, mname, "_envdata.Rdata"))
+# download.file('https://storage.googleapis.com/data-sharing-gmoncrieff/peninsulaDec2019_inputdata_small.Rdata', destfile = paste0(mdatwd, mname, "_inputdata_small.Rdata"))
 
 #load results
 foutput <- paste0(mdatwd, mname, "_modeloutput.Rdata")
@@ -92,10 +92,13 @@ As <- res %>%
 ####convert to rasters
 #####################################
 
-env = env %>%
-  separate(UIJ,c("lon","lat"),sep="_")
+env = env |>
+  separate_wider_delim(cols = UI, names = c("lon","lat"), delim = "_") |>
+  mutate(across(c("lon","lat"), as.numeric))
 
-#rasterise
+#rasterise - could try making on df and seeing if rast() would make a stack?
+#grd <- rast(paste0(mdatwd,"NDVI_input_grid.tif"))
+
 gammaM <- data.frame(lon = env$lon, lat = env$lat, gammas$Mean)
 gammaSD <- data.frame(lon = env$lon, lat = env$lat, gammas$SD)
 alphaM <- data.frame(lon = env$lon, lat = env$lat, alphas$Mean)
@@ -105,21 +108,21 @@ lambdaSD <- data.frame(lon = env$lon, lat = env$lat, lambdas$SD)
 AM <- data.frame(lon = env$lon, lat = env$lat, As$Mean)
 ASD <- data.frame(lon = env$lon, lat = env$lat, As$SD)
 
-gammaMras<-rasterFromXYZ(gammaM,res=c(0.002607436,0.002607436),crs='+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs',digits=0.3)
-gammaSDras<-rasterFromXYZ(gammaSD,res=c(0.002607436,0.002607436),crs='+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs',digits=0.3)
-alphaMras<-rasterFromXYZ(alphaM,res=c(0.002607436,0.002607436),crs='+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs',digits=0.3)
-alphaSDras<-rasterFromXYZ(alphaSD,res=c(0.002607436,0.002607436),crs='+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs',digits=0.3)
-lambdaMras<-rasterFromXYZ(lambdaM,res=c(0.002607436,0.002607436),crs='+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs',digits=0.3)
-lambdaSDras<-rasterFromXYZ(lambdaSD,res=c(0.002607436,0.002607436),crs='+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs',digits=0.3)
-AMras<-rasterFromXYZ(AM,res=c(0.002607436,0.002607436),crs='+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs',digits=0.3)
-ASDras<-rasterFromXYZ(ASD,res=c(0.002607436,0.002607436),crs='+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs',digits=0.3)
+gammaMras <- rast(gammaM, crs='+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
+gammaSDras <- rast(gammaSD, crs='+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
+alphaMras <- rast(alphaM, crs='+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
+alphaSDras <- rast(alphaSD, crs='+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
+lambdaMras <- rast(lambdaM, crs='+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
+lambdaSDras <- rast(lambdaSD, crs='+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
+AMras <- rast(AM, crs='+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
+ASDras <- rast(ASD, crs='+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
 
 #write to disk
-writeRaster(gammaMras,paste0(mdatwd, "/EarthEngine/gammaM.tif"))
-writeRaster(gammaSDras,paste0(mdatwd, "/EarthEngine/gammaSD.tif"))
-writeRaster(lambdaMras,paste0(mdatwd, "/EarthEngine/lambdaM.tif"))
-writeRaster(lambdaSDras,paste0(mdatwd, "/EarthEngine/lambdaSD.tif"))
-writeRaster(alphaMras,paste0(mdatwd, "/EarthEngine/alphaM.tif"))
-writeRaster(alphaSDras,paste0(mdatwd, "/EarthEngine/alphaSD.tif"))
-writeRaster(AMras,paste0(mdatwd, "/EarthEngine/AM.tif"))
-writeRaster(ASDras,paste0(mdatwd, "/EarthEngine/ASD.tif"))
+writeRaster(gammaMras,paste0(mdatwd, "/output_parameters/gammaM.tif"))
+writeRaster(gammaSDras,paste0(mdatwd, "/output_parameters/gammaSD.tif"))
+writeRaster(lambdaMras,paste0(mdatwd, "/output_parameters/lambdaM.tif"))
+writeRaster(lambdaSDras,paste0(mdatwd, "/output_parameters/lambdaSD.tif"))
+writeRaster(alphaMras,paste0(mdatwd, "/output_parameters/alphaM.tif"))
+writeRaster(alphaSDras,paste0(mdatwd, "/output_parameters/alphaSD.tif"))
+writeRaster(AMras,paste0(mdatwd, "/output_parameters/AM.tif"))
+writeRaster(ASDras,paste0(mdatwd, "/output_parameters/ASD.tif"))

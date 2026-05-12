@@ -58,6 +58,7 @@ NDVI <- crop(NDVI, cp)
 NDVIdates <- read.csv("data/NDVI_dates_2001_2026.csv") # Load dates
 time(NDVI) <- as.Date(NDVIdates$date) # Assign time
 NDVI <- NDVI[[time(NDVI) < as.Date("2022-06-01")]] # Select only NDVI within the fire observation period
+writeRaster(NDVI[[1]], paste0(mdatwd,"NDVI_input_grid.tif"), overwrite=T)
 
 #spatial covariates
 #load(paste0(mdatwd,"inputData.RData"))
@@ -228,7 +229,7 @@ env <- cbind(env,dummies)
 
 #have a look at collinearity
 # require(GGally)
-# ggpairs(as.data.frame(env_full))
+# ggpairs(cov[,3:12]) # ggpairs(as.data.frame(env_full))
 
 #save the scaling parameters to convert fitted coefficients back to metric units later
 beta.mu=c(intercept=0,attr(scaled,"scaled:center")) #,rep(0,ncol(tveg)))
