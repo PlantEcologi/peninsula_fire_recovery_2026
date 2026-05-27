@@ -15,12 +15,15 @@ libs=c("tidyverse",
        "scales",
        "sf",
        "cowplot",
-       "stringr")
+       "stringr",
+       "ggridges",
+       "viridis",
+       "ggforce")
 lapply(libs, require, character.only=T)
 
 #file locations and names
 mdatwd <- "data/"
-mname <- "peninsulaJune20222026-04-16" #model name for file naming
+mname <- "peninsulaLandsatMay20262026-05-26" #model name for file naming
 
 ###########################################################
 ###Get exceedance rasters (GEE output) and plot
@@ -143,18 +146,17 @@ As <- res %>%
   dplyr::select(c("Mean","SD","parstr","parnum"))
 
 
-#to get a raster of ids:
-env = env %>%
-  separate(UI,c("lon","lat"),sep="_")
-jag_id <- data.frame(lon = env$lon, lat = env$lat, env$jag_id)
-jag_id_ras<-rast(jag_id,crs='+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
+#to points layer of ids:
+env <- env |> st_set_geometry(env$UI) |> 
+  st_as_sf(crs = 4326)
+
+#  separate(UI,c("lon","lat"),sep="_")
+jag_id <- env |> select("jag_id", "UI")
+#jag_id <- data.frame(lon = env$lon, lat = env$lat, env$jag_id)
+#jag_id_ras<-rast(jag_id,crs='+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
 
 ###########################################################
 ###Plot maps of parameters and boxplot of regression coefficients
-###########################################################
-
-###########################################################
-###Plot maps of parameters and regression coefficients
 ###########################################################
 
 # Parameter coefficients
@@ -183,10 +185,10 @@ betas$covariate <- recode(betas$covariate,  # see names(env) for names and order
                           'beta[3]' = "slope",
                           'beta[4]' = "TPI",
                           'beta[5]' = "northness",
-                          'beta[6]' = "eastness",
-                          'beta[7]' = "granite", 
-                          'beta[8]' = "sandstone",
-                          'beta[9]' = "sand")
+                          'beta[6]' = "eastness")
+                        #  'beta[7]' = "granite", 
+                        #  'beta[8]' = "sandstone",
+                        #  'beta[9]' = "sand")
 
 b <- ggplot(betas) +
   geom_boxplot(aes(x = covariate, y = value)) +
@@ -201,7 +203,7 @@ b <- ggplot(betas) +
 
 dat <- bind_rows(lambdas, gammas, alphas, As) |>
   mutate(across(c("parnum"), as.numeric))
-dat <- left_join(dat, jag_id, by = c("parnum" = "env.jag_id")) #"gammas.parnum"))
+dat <- left_join(dat, jag_id, by = c("parnum" = "jag_id")) #"gammas.parnum"))
 dat$lon <- as.numeric(as.character(dat$lon))
 dat$lat <- as.numeric(as.character(dat$lat))
 dat <- fortify(dat)
@@ -428,11 +430,11 @@ Pcp <- ggplot(data=new_dat, aes(x=Date,y=NDVI)) +
   geom_line(color="blue") +
   geom_ribbon(aes(ymin=lower,ymax=upper,alpha=0.1))+
   geom_ribbon(aes(ymin=lq,ymax=uq,alpha=0.1))+
-  scale_x_date(date_breaks = "3 year",
+  scale_x_date(date_breaks = "5 year",
                labels=date_format("%Y"),
-               limits = as.Date(c('2001-01-01','2022-06-01'))) +
-  scale_y_continuous(limits=c(0,1)) +
-  facet_wrap(~Name) +
+               limits = as.Date(c('1984-01-01','2022-06-01'))) +
+ # scale_y_continuous(limits=c(0,1)) +
+  facet_wrap(~UIJ) +
   xlab("Date") +
   ylab("NDVI") +
   theme_bw() +
@@ -443,7 +445,7 @@ Pcp <- ggplot(data=new_dat, aes(x=Date,y=NDVI)) +
 #  annotate("text", label = "Fit", x = as.Date("2013-03-15"), y = 0.1) +
 #  annotate("text", label = "Forecast", x = as.Date("2015-06-01"), y = 0.1)
 
-ggsave(filename = "figures/CP_postfire_curves_points_of_interest.png", plot = Pcp, device = NULL, path = NULL, scale = 1, width = 36, height = 24, units = "cm", dpi = 300, limitsize = TRUE)
+ggsave(filename = "figures/CP_postfire_curves_points_of_interest_Lansdat.png", plot = Pcp, device = NULL, path = NULL, scale = 1, width = 36, height = 24, units = "cm", dpi = 300, limitsize = TRUE)
 
 # Plot map
 library(rosm)
@@ -475,7 +477,7 @@ library(slider)
 
 # For each time step
 crps_dat <- new_dat |>
-  group_by(Name, Date)  |>
+  group_by(UIJ, Date)  |>
   mutate(sd = (upper - lower) / 3.92 ) |> # Convert 95% CI to SD
   mutate(crps = crps_norm(y = NDVI, mean = mean, sd = sd)) |> # Calculate CRPS for each prediction
   mutate(crps_cum_avg = cummean(crps)) |> # Cumulative average of CRPS over time
@@ -485,7 +487,7 @@ crps_dat <- new_dat |>
 
 # Annual values
 crps_year <- crps_dat |>
-  group_by(Name, Year = lubridate::year(Date)) |>
+  group_by(UIJ, Year = lubridate::year(Date)) |>
   summarise(crps = mean(crps), mfe = mean(mfe))
 
 ### Plot CRPS and MFE by year
@@ -497,10 +499,10 @@ crps_year |>
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
   # ylim(0, 0.2) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
-  facet_wrap(~Name) +
-  labs(title = "Average Mean Forecast Error (MFE) by Year")
+  facet_wrap(~UIJ) +
+  labs(title = "Average Mean Forecast Error (MFE: NDVI - mean) by Year")
 
-ggsave(filename = "figures/CP_MFE_annual.png", device = NULL, path = NULL, scale = 1, width = 36, height = 24, units = "cm", dpi = 300, limitsize = TRUE)
+ggsave(filename = "figures/CP_MFE_annual_Landsat.png", device = NULL, path = NULL, scale = 1, width = 36, height = 24, units = "cm", dpi = 300, limitsize = TRUE)
 
 #crps
 crps_year |> 
@@ -509,10 +511,10 @@ crps_year |>
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
   # ylim(0, 0.2) +
   # geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
-  facet_wrap(~Name) +
+  facet_wrap(~UIJ) +
   labs(title = "Average Continuous Rank Probability Score (CRPS) by Year")
 
-ggsave(filename = "figures/CP_CRPS_annual.png", device = NULL, path = NULL, scale = 1, width = 36, height = 24, units = "cm", dpi = 300, limitsize = TRUE)
+ggsave(filename = "figures/CP_CRPS_annual_Landsat.png", device = NULL, path = NULL, scale = 1, width = 36, height = 24, units = "cm", dpi = 300, limitsize = TRUE)
 
 ### Plot CRPS and MFE over time for all timesteps
 
@@ -525,10 +527,44 @@ crps_dat |>
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
  # ylim(0, 0.2) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
-  facet_wrap(~Name) +
-  labs(title = "Mean Forecast Error (MFE) for all timesteps")
+  facet_wrap(~UIJ) +
+  labs(title = "Mean Forecast Error (MFE: NDVI - mean) for all timesteps")
 
-ggsave(filename = "figures/CP_MFE_timestep.png", device = NULL, path = NULL, scale = 1, width = 36, height = 24, units = "cm", dpi = 300, limitsize = TRUE)
+ggsave(filename = "figures/CP_MFE_timestep_Landsat.png", device = NULL, path = NULL, scale = 1, width = 36, height = 24, units = "cm", dpi = 300, limitsize = TRUE)
+
+#mfe density plots by year
+crps_dat |> 
+  mutate(Year = factor(year(Date), levels = 1984:2022)) |>
+  ggplot(aes(x = mfe, y = Year, fill = ..x..)) +
+  geom_density_ridges_gradient(quantile_lines = T, quantiles = 2) + #quantile_lines = T) +
+  scale_fill_viridis_c(name = "mfe", option = "C") +
+  xlim(-0.15,0.15) +
+  geom_vline(xintercept = 0, linetype = "dashed") 
+
+ggsave(filename = "figures/CP_MFE_ridges_all_Landsat.png", device = NULL, path = NULL, scale = 1, width = 10, height = 24, units = "cm", dpi = 300, limitsize = TRUE)
+
+
+ridges <- crps_dat |> 
+  mutate(Year = factor(year(Date), levels = 1984:2022)) |>
+  ggplot(aes(x = mfe, y = Year, fill = ..x..)) +
+  geom_density_ridges_gradient(quantile_lines = T, quantiles = 2) + #quantile_lines = T) +
+  scale_fill_viridis_c(name = "mfe", option = "C") +
+  xlim(-0.15,0.15) +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  #facet_wrap(~ UIJ, ncol = 10, nrow = 5, page = 10)
+  facet_wrap(~ UIJ, ncol = 10, nrow = 5)
+  
+ggsave(filename = "figures/CP_MFE_ridges_plots_Landsat.png", device = NULL, path = NULL, scale = 1, width = 36, height = 50, units = "cm", dpi = 300, limitsize = TRUE)
+
+#+
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  # ylim(0, 0.2) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  facet_wrap(~UIJ) +
+  labs(title = "Mean Forecast Error (MFE: NDVI - mean) for all timesteps")
+
+ggsave(filename = "figures/CP_MFE_timestep_Landsat.png", device = NULL, path = NULL, scale = 1, width = 36, height = 24, units = "cm", dpi = 300, limitsize = TRUE)
+
 
 #mfe cumulative average by date
 crps_dat |> 
@@ -537,7 +573,7 @@ crps_dat |>
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
   # ylim(0, 0.2) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
-  facet_wrap(~Name)
+  facet_wrap(~UIJ)
 
 #mfe sliding average (3 previous timesteps) by date
 crps_dat |> 
@@ -546,14 +582,14 @@ crps_dat |>
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
   # ylim(0, 0.2) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
-  facet_wrap(~Name)
+  facet_wrap(~UIJ)
 
 #mfe by age
 crps_dat |> 
   ggplot(aes(x = Age, y = mfe)) +
   geom_point() +
   geom_smooth(method = "loess") +
-  facet_wrap(~Name)
+  facet_wrap(~UIJ)
   #theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
   # ylim(0, 0.2) +
   #geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
