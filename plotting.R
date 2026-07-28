@@ -28,38 +28,38 @@ mname <- "peninsulaJune20222026-04-16" #model name for file naming
 ###Hash out this section if you don't have GEE outputs yet
 ###########################################################
 
-# Get data and wrangle for plotting
-exceed <- stack("data/exceed_below.tif", "data/exceed_above.tif")
-names(exceed) <- c("below", "above")
-exceed <- projectRaster(exceed, crs = CRS("+proj=merc +lon_0=0 +lat_ts=0 +x_0=0 +y_0=0 +a=6378137 +b=6378137 +units=m +no_defs"))
-edat <- as.data.frame(rasterToPoints(exceed, spatial = F))
-edat <- melt(edat, id = c("x", "y"))
-edat <- fortify(edat)
-
-# Get a pretty coastline for plotting
-coast <- st_read("Data/coastline") #, layer = "coastline")
-coast <- fortify(coast)
-
-# Plot
-
-g <- ggplot() +
-  geom_sf(data = coast, fill = "skyblue1") +
-  geom_tile(data = edat, aes(x, y, fill = value)) + 
-  scale_fill_gradient(low = "#FFF5F0", high = "#67000D", na.value = "transparent") +
-  facet_wrap(~variable) +
-  theme_void() +
-  labs(fill="Deviance") + 
-  theme(legend.position=c(.1,.25)) + 
-  annotate("rect", xmin = 2045607, xmax = 2054169, ymin = -4045661, ymax = -4040601, fill = "transparent", colour = "grey30") + 
-  annotate("text", label = "Silvermine", x = 2050000, y = -4047000, colour = "grey30") +
-  annotate("rect", xmin = 2037356, xmax = 2042970, ymin = -4037517, ymax = -4031284, fill = "transparent", colour = "grey30") + 
-  annotate("text", label = "Karbonkelberg", x = 2040000, y = -4038500, colour = "grey30") +
-  annotate("rect", xmin = 2050000, xmax = 2052500, ymin = -4072500, ymax = -4069250, fill = "transparent", colour = "grey30") + 
-  annotate("text", label = "Cape of Good Hope", x = 2050000, y = -4074000, colour = "grey30") +
-  annotate("rect", xmin = 2053500, xmax = 2056500, ymin = -4061000, ymax = -4058500, fill = "transparent", colour = "grey30") + 
-  annotate("text", label = "Miller's Point", x = 2055500, y = -4062500, colour = "grey30")
-
-ggsave(filename = "figures/exceedmap.png", plot = g, device = NULL, path = NULL, scale = 1, width = 18, height = 18, units = "cm", dpi = 300, limitsize = TRUE)
+# # Get data and wrangle for plotting
+# exceed <- stack("data/exceed_below.tif", "data/exceed_above.tif")
+# names(exceed) <- c("below", "above")
+# exceed <- projectRaster(exceed, crs = CRS("+proj=merc +lon_0=0 +lat_ts=0 +x_0=0 +y_0=0 +a=6378137 +b=6378137 +units=m +no_defs"))
+# edat <- as.data.frame(rasterToPoints(exceed, spatial = F))
+# edat <- melt(edat, id = c("x", "y"))
+# edat <- fortify(edat)
+# 
+# # Get a pretty coastline for plotting
+# coast <- st_read("Data/coastline") #, layer = "coastline")
+# coast <- fortify(coast)
+# 
+# # Plot
+# 
+# g <- ggplot() +
+#   geom_sf(data = coast, fill = "skyblue1") +
+#   geom_tile(data = edat, aes(x, y, fill = value)) + 
+#   scale_fill_gradient(low = "#FFF5F0", high = "#67000D", na.value = "transparent") +
+#   facet_wrap(~variable) +
+#   theme_void() +
+#   labs(fill="Deviance") + 
+#   theme(legend.position=c(.1,.25)) + 
+#   annotate("rect", xmin = 2045607, xmax = 2054169, ymin = -4045661, ymax = -4040601, fill = "transparent", colour = "grey30") + 
+#   annotate("text", label = "Silvermine", x = 2050000, y = -4047000, colour = "grey30") +
+#   annotate("rect", xmin = 2037356, xmax = 2042970, ymin = -4037517, ymax = -4031284, fill = "transparent", colour = "grey30") + 
+#   annotate("text", label = "Karbonkelberg", x = 2040000, y = -4038500, colour = "grey30") +
+#   annotate("rect", xmin = 2050000, xmax = 2052500, ymin = -4072500, ymax = -4069250, fill = "transparent", colour = "grey30") + 
+#   annotate("text", label = "Cape of Good Hope", x = 2050000, y = -4074000, colour = "grey30") +
+#   annotate("rect", xmin = 2053500, xmax = 2056500, ymin = -4061000, ymax = -4058500, fill = "transparent", colour = "grey30") + 
+#   annotate("text", label = "Miller's Point", x = 2055500, y = -4062500, colour = "grey30")
+# 
+# ggsave(filename = "figures/exceedmap.png", plot = g, device = NULL, path = NULL, scale = 1, width = 18, height = 18, units = "cm", dpi = 300, limitsize = TRUE)
 
 ###########################################################
 ###Get model data and prep for model prediction and plotting
@@ -421,6 +421,8 @@ for (j in 1:nrow(env)){
 #Fix names
 nms <- data.frame(jag_id = ids[,2], Name = pts$Site)
 new_dat <- merge(new_dat, nms, by.x = "jag_id", by.y = "jag_id")
+new_dat <- new_dat |> mutate(Plot = str_remove_all(Name, "[psw]"))
+write_csv(new_dat, "data/predicted_mean_NDVI_MODIS.csv")
 
 #cape point
 Pcp <- ggplot(data=new_dat, aes(x=Date,y=NDVI)) +
@@ -571,6 +573,8 @@ crps_dat |>
 
 ggsave(filename = "figures/CP_CRPS_timestep.png", device = NULL, path = NULL, scale = 1, width = 36, height = 24, units = "cm", dpi = 300, limitsize = TRUE)
 
+### Ridgeline plots
+
 # crps cumulative average by date
 crps_dat |> 
   ggplot(aes(x = Date, y = crps_cum_avg)) +
@@ -580,6 +584,81 @@ crps_dat |>
   #geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
   facet_wrap(~Name)
 
+#mfe density plots by year
+crps_dat |> 
+  mutate(Year = factor(year(Date), levels = 1984:2022)) |>
+  ggplot(aes(x = mfe, y = Year, fill = after_stat(x))) +
+  geom_density_ridges_gradient(quantile_lines = T, quantiles = 2) + #quantile_lines = T) +
+  scale_fill_viridis_c(name = "mfe", option = "C") +
+  xlim(-0.15,0.15) +
+  geom_vline(xintercept = 0, linetype = "dashed") 
+
+ggsave(filename = "figures/CP_MFE_ridges_all_MODIS.png", device = NULL, path = NULL, scale = 1, width = 10, height = 24, units = "cm", dpi = 300, limitsize = TRUE)
+
+
+ridges <- crps_dat |> 
+  mutate(Year = factor(year(Date), levels = 1984:2022),
+         Plot = str_remove_all(Name, "[psw]")) |>
+  ggplot(aes(x = mfe, y = Year, fill = ..x..)) +
+  geom_density_ridges_gradient(quantile_lines = T, quantiles = 2) + #quantile_lines = T) +
+  scale_fill_viridis_c(name = "mfe", option = "C") +
+  xlim(-0.15,0.15) +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  #facet_wrap(~ UIJ, ncol = 10, nrow = 5, page = 10)
+  facet_wrap(~ Plot, ncol = 10, nrow = 5)
+
+ggsave(filename = "figures/CP_MFE_ridges_plots_MODIS.png", plot = ridges, device = NULL, path = NULL, scale = 1, width = 36, height = 50, units = "cm", dpi = 300, limitsize = TRUE)
+
+
+#mfe cumulative average by date
+crps_dat |> 
+  ggplot(aes(x = Date, y = mfe_cum_avg)) +
+  geom_line() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  # ylim(0, 0.2) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  facet_wrap(~UIJ)
+
+#mfe sliding average (3 previous timesteps) by date
+crps_dat |> 
+  ggplot(aes(x = Date, y = mfe_slide_avg)) +
+  geom_line() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  # ylim(0, 0.2) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  facet_wrap(~UIJ)
+
+#mfe by age
+crps_dat |> 
+  ggplot(aes(x = Age, y = mfe)) +
+  geom_point() +
+  geom_smooth(method = "loess") +
+  facet_wrap(~UIJ)
+#theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+# ylim(0, 0.2) +
+#geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+#facet_wrap(~Name)
+
+# crps by date
+crps_dat |> 
+  ggplot(aes(x = Date, y = crps)) +
+  geom_line() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  ylim(0, 0.2) +
+  #geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  facet_wrap(~Name) +
+  labs(title = "Continuous Rank Probability Score (CRPS) for all timesteps")
+
+ggsave(filename = "figures/CP_CRPS_timestep.png", device = NULL, path = NULL, scale = 1, width = 36, height = 24, units = "cm", dpi = 300, limitsize = TRUE)
+
+# crps cumulative average by date
+crps_dat |> 
+  ggplot(aes(x = Date, y = crps_cum_avg)) +
+  geom_line() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  ylim(0, 0.2) +
+  #geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  facet_wrap(~Name)
 
 # Boxplot by year
 crps_dat |> 

@@ -598,7 +598,7 @@ crps_dat |>
   facet_wrap(~Name) +
   labs(title = "Continuous Rank Probability Score (CRPS) for all timesteps")
 
-ggsave(filename = "figures/CP_CRPS_timestep.png", device = NULL, path = NULL, scale = 1, width = 36, height = 24, units = "cm", dpi = 300, limitsize = TRUE)
+ggsave(filename = "figures/CP_CRPS_timestep_Landsat.png", device = NULL, path = NULL, scale = 1, width = 36, height = 24, units = "cm", dpi = 300, limitsize = TRUE)
 
 # crps cumulative average by date
 crps_dat |> 
